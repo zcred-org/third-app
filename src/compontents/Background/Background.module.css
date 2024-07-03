@@ -1,0 +1,79 @@
+:root {
+  --secondary-glow : conic-gradient(
+      from 10deg at 50% 50%,
+      #EB7494 0deg,
+      #AE77B2 55deg,
+      #97B5DA 120deg,
+      #0099CA 160deg,
+      transparent 360deg
+  );
+
+  --third-glow     : conic-gradient(
+      from 90deg at 50% 50%,
+      #FF8B7E 0deg,
+      #E24E6B 160deg,
+      #7ED2DA 120deg,
+      #8BDCE0 55deg,
+      transparent 360deg
+  );
+}
+
+.root {
+  overflow   : hidden;
+  max-height : 100vh;
+}
+
+.root::before,
+.root::after {
+  position : absolute;
+  z-index  : -1;
+  content  : '';
+  opacity  : 0.8;
+}
+
+.root::before {
+  top           : calc(50vh - 50vw / 2);
+  left          : calc(50vw);
+  width         : 40vw;
+  height        : 40vw;
+  margin-left   : -200px;
+  animation     : animateBefore 7s cubic-bezier(0.47, 0, 0.745, 0.715) infinite;
+  border-radius : 50%;
+  background    : var(--third-glow);
+  filter        : blur(90px);
+}
+
+.root::after {
+  top           : calc(50vh - 50vw / 2);
+  left          : calc(50vw - 50vw / 2);
+  width         : 500px;
+  height        : 700px;
+  animation     : animateAfter 9s cubic-bezier(0.47, 0, 0.745, 0.715) infinite;
+  border-radius : 50%;
+  background    : var(--secondary-glow);
+  filter        : blur(90px);
+}
+
+@keyframes animateBefore {
+  0% {
+    transform : translateY(0);
+  }
+  50% {
+    transform : translateY(200px) scale(0.8);
+  }
+  100% {
+    transform : translateY(0);
+  }
+}
+
+@keyframes animateAfter {
+  0% {
+    transform : translateX(25px) scale(0.9);
+  }
+  50% {
+    transform : translateX(-125px) scale(1.2);
+  }
+  100% {
+    transform : translateX(25px) scale(0.9);
+  }
+}
