@@ -11,26 +11,28 @@
   },
   "dependencies": {
     "@zcredjs/core": "1.1.3",
-    "@zcredjs/ethereum": "0.0.5",
+    "@zcredjs/ethereum": "0.0.7",
     "@zcredjs/mina": "^1.0.4",
+    "antd": "^5.19.0",
     "ethers": "^6.13.1",
     "randombytes": "^2.1.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-query": "^3.39.3",
     "react-scripts": "^5.0.1",
-    "uint8arrays": "5.0.1"
+    "uint8arrays": "5.1.0"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
-    "@types/react": "^18.2.43",
-    "@types/react-dom": "^18.2.17",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "@typescript-eslint/parser": "^6.14.0",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.1",
     "eslint": "^8.55.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.8"
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.7",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.3"
   }
 }

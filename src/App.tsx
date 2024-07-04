@@ -1,289 +1,150 @@
-import "./App.css";
-import { CredHolder, Identifier, type UserData } from "@zcredjs/core";
-import { useEffect, useState } from "react";
-import { ethers } from "ethers";
-import { EIP1193Adapter, IEIP1193Provider } from "@zcredjs/ethereum";
+import { useEffect, useState } from 'react';
+import { ethers } from 'ethers';
+import { EIP1193Adapter, IEIP1193Provider } from '@zcredjs/ethereum';
+import { credHolder } from './backbone/cred-holder.ts';
+import { contractAbi } from './backbone/contract.ts';
+import type { SybilContract } from './types/sybil-contract.ts';
+import type { UserData } from '@zcredjs/core';
+import { Background } from './compontents/Background/Background.tsx';
+import css from './App.module.css';
+import { Button, Card, Typography, notification, Alert, Divider, Flex, Result } from 'antd';
+import { useMutation } from 'react-query';
+import { getEthSybil } from './utils/get-eth-sybil.ts';
+import { config } from './backbone/config.ts';
 
-const credHolder = new CredHolder({
-  credentialHolderURL: new URL("http://localhost:5173"),
-  userDataHolderURL: new URL("http://localhost:5001/api/v1/secret-data")
-});
 
-type EthSybil = {
-  address: string;
-  sybilId: string;
-  signature: string;
-}
-
-const contractAddress = "0xf73077e5BDAF0041FB7D70C8CD206C517E83A05C";
-
-function App() {
+export function App() {
+  const [toast, toastHolder] = notification.useNotification({ placement: 'bottomRight' });
+  const [error, setError] = useState<null | Error>(null);
 
   const [ethWallet, setEthWallet] = useState<null | ethers.BrowserProvider>(null);
   const [eip1193Adapter, setEip1193Adapter] = useState<null | EIP1193Adapter>(null);
-  const [subjectId, setSubjectId] = useState<null | Identifier>(null);
-  const [redirectURL, setRedirectURL] = useState<null | URL>(null);
   const [userData, setUserData] = useState<null | UserData>(null);
-  const [sybilId, setSybilId] = useState<null | string>(null);
 
   useEffect(() => {
-
-    const ethProvider = "ethereum" in window && window.ethereum;
-    setEip1193Adapter(ethProvider
-      ? new EIP1193Adapter(ethProvider as IEIP1193Provider)
-      : null
-    );
-    if (ethProvider) {
-      const wallet = new ethers.BrowserProvider(ethProvider as IEIP1193Provider);
-      setEthWallet(wallet);
-    } else {
-      setEthWallet(null);
-    }
-    if (!ethProvider) throw new Error(
-      `Install ethereum wallet or auro wallet`
-    );
+    // Load ethereum wallet
+    const ethProvider = 'ethereum' in window && window.ethereum as IEIP1193Provider;
+    setEip1193Adapter(ethProvider ? new EIP1193Adapter(ethProvider) : null);
+    setEthWallet(ethProvider ? new ethers.BrowserProvider(ethProvider) : null);
+    if (!ethProvider) setError(new Error('Install ethereum wallet or auro wallet'));
+    // Check after-verification artifacts
     const urlParams = new URLSearchParams(window.location.search);
-    const sessionId = urlParams.get("clientSession");
+    const sessionId = urlParams.get('clientSession');
     if (sessionId) {
       const userDataStr = window.localStorage.getItem(sessionId);
       setUserData(userDataStr ? JSON.parse(userDataStr) : null);
     }
   }, []);
 
-  async function onEthConnect() {
-    if (eip1193Adapter) {
+  const {
+    mutate: onEthConnect,
+    data: { redirectURL, subjectId } = {},
+    isLoading: isEthConnectLoading,
+  } = useMutation({
+    mutationFn: async () => {
+      if (!eip1193Adapter) throw new Error('No EIP1193Adapter');
       const subjectId = await eip1193Adapter.getSubjectId();
-      setSubjectId(subjectId);
       const data = {
         subject: {
-          id: subjectId
+          id: subjectId,
         },
-        redirectURL: window.location.origin
+        redirectURL: window.location.origin,
       } as const;
       const { openURL, clientSession } = await credHolder.startVerification({
-        proposalURL: new URL("https://dev.verifier.sybil.center/zcred/proposal/o1js-ethereum-passport"),
-        data: data
+        proposalURL: new URL('https://dev.verifier.sybil.center/zcred/proposal/o1js-ethereum-passport'),
+        data: data,
       });
       window.localStorage.setItem(clientSession, JSON.stringify(data));
-      setRedirectURL(openURL);
-    }
-  }
+      return { subjectId, redirectURL: openURL };
+    },
+    onMutate: async () => setError(null),
+    onError: async (error: Error) => {
+      setError(error);
+      toast.error({ message: 'Error!', description: error.message });
+    },
+  });
 
-  async function setSybilIdOnChain() {
-    if (!userData) throw new Error("No user data");
-    const signer = await ethWallet!.getSigner();
-    const sybilContract = new ethers.Contract(contractAddress, abi, signer) as ethers.Contract & SybilContract;
-    const sybilId = await sybilContract.getSybilId(userData.subject.id.key);
-    if (ethers.hexlify(new Uint8Array(20).fill(0)) !== sybilId) {
-      setSybilId(sybilId);
-    } else {
-      const { sybilId, signature } = await getEthSybil(userData.subject.id.key);
-      const txn = await sybilContract.setSybilId(
-        ethers.getBytes(sybilId),
-        ethers.getBytes(signature),
-        { value: 20000000000000000n }
-      );
-      await txn.wait();
-      setSybilId(sybilId);
-    }
+  const {
+    mutate: setSybilIdOnChain,
+    data: sybilId,
+    isLoading: isSetSybilIdOnChainLoading,
+  } = useMutation({
+    mutationFn: async () => {
+      if (!userData) throw new Error('No user data');
+      if (!ethWallet) throw new Error('ETH wallet undefined');
+      const signer = await ethWallet.getSigner();
+      const sybilContract = new ethers.Contract(config.contractAddress, contractAbi, signer) as ethers.Contract & SybilContract;
+      const sybilId = await sybilContract.getSybilId(userData.subject.id.key);
+      if (ethers.hexlify(new Uint8Array(20).fill(0)) !== sybilId) {
+        return sybilId;
+      } else {
+        const { sybilId, signature } = await getEthSybil(userData.subject.id.key);
+        const txn = await sybilContract.setSybilId(
+          ethers.getBytes(sybilId),
+          ethers.getBytes(signature),
+          { value: 20000000000000000n },
+        );
+        await txn.wait();
+        return sybilId;
+      }
+    },
+    onMutate: async () => setError(null),
+    onError: async (error: Error) => {
+      setError(error);
+      toast.error({ message: 'Error!', description: error.message });
+    },
+  });
 
-  }
-
-  async function getEthSybil(address: string): Promise<EthSybil> {
-    const ep = new URL(`https://dev.verifier.sybil.center/api/eth-sybil/${address.toLowerCase()}`);
-    const resp = await fetch(ep);
-    if (!resp.ok) throw new Error(
-      `Resp URL: ${resp.url}, status code: ${resp.status} ,body: ${await resp.text()}`
-    );
-    return (await resp.json()) as EthSybil;
-
-  }
-
-
-  const renderBeforeVerification = () => {
+  const BeforeVerification = () => {
     if (!subjectId) return (
-      <>
-        {eip1193Adapter && <button onClick={onEthConnect}>
-          Connect Ethereum Wallet
-        </button>}
-      </>
+      <Button disabled={!eip1193Adapter} loading={isEthConnectLoading} onClick={() => onEthConnect()}>
+        Connect Ethereum Wallet
+      </Button>
     );
     if (redirectURL) return (
       <a href={redirectURL?.href}>
-        <button>
+        <Button>
           Auth with zCred
-        </button>
+        </Button>
       </a>
     );
     return (<></>);
   };
 
-  const renderAfterVerification = () => {
-    if (sybilId) return (<>${sybilId}</>);
-    else if (!sybilId) return (<button onClick={setSybilIdOnChain}>Set Sybil ID on Chain</button>);
-  };
+  const AfterVerification = () => (
+    <Result
+      status="success"
+      title="Successful verification"
+      subTitle={sybilId ? `Sybil ID: ${sybilId}` : 'You can have access to your wanted resource now!'}
+      extra={!sybilId ? [
+        <Button
+          loading={isSetSybilIdOnChainLoading}
+          onClick={() => setSybilIdOnChain()}
+        >Set Sybil ID on Chain</Button>,
+      ] : undefined}
+    />
+  );
 
   return (
-    <>
-      {!userData && renderBeforeVerification()}
-      {userData && renderAfterVerification()}
-    </>
+    <Background className={css.root}>
+      <Typography.Title style={{ color: 'white' }}>Third-App</Typography.Title>
+      <Card style={{ maxWidth: '500px' }}>
+        <Flex justify="center" vertical>
+          {!userData ? <BeforeVerification /> : <AfterVerification />}
+        </Flex>
+        {error ? (<>
+          <Divider />
+          <Alert
+            message="Error"
+            description={error.message}
+            type="error"
+            showIcon
+            closable
+            onClose={() => setError(null)}
+          />
+        </>) : null}
+      </Card>
+      {toastHolder}
+    </Background>
   );
 }
-
-export default App;
-
-type SybilContract = {
-  getSybilId: (address: string) => Promise<string>;
-  setSybilId: (sybilId: Uint8Array, signature: Uint8Array, data: {
-    value: BigInt
-  }) => Promise<ethers.ContractTransactionResponse>
-}
-
-const abi = [
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_requireWei",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "ChangeOwner",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "newRequireWei",
-        "type": "uint256"
-      }
-    ],
-    "name": "ChangeRequireWei",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "subjectId",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes20",
-        "name": "sybilId",
-        "type": "bytes20"
-      }
-    ],
-    "name": "SybilAdd",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_address",
-        "type": "address"
-      }
-    ],
-    "name": "getSybilId",
-    "outputs": [
-      {
-        "internalType": "bytes20",
-        "name": "",
-        "type": "bytes20"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address payable",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "requireWei",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "setOwner",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_requireWei",
-        "type": "uint256"
-      }
-    ],
-    "name": "setRequireWei",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes20",
-        "name": "_sybilId",
-        "type": "bytes20"
-      },
-      {
-        "internalType": "bytes",
-        "name": "signature",
-        "type": "bytes"
-      }
-    ],
-    "name": "setSybilId",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  }
-];
