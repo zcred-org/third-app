@@ -4,4 +4,3 @@ dist
 .env*
 .gitignore
 .dockerignore
-#Docker ignore
