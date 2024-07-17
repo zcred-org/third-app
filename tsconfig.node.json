@@ -6,5 +6,10 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true
   },
-  "include": ["vite.config.ts"]
+  "exclude": [
+    "./scripts"
+  ],
+  "include": [
+    "vite.config.ts"
+  ]
 }
