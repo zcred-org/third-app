@@ -13,7 +13,8 @@ credentials`](https://github.com/zcred-org/ZCIPs/blob/main/ZCIPs/zcip-2.md) and 
 
 ## Requirements
 
-- Metamask installed as browser extension
+- [Metamask](https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn) installed as browser
+  extension
 - Node JS
 - pnpm
 
@@ -43,7 +44,6 @@ pnpm run dev
 ```
 
 6. Go throw zCred verification (the process of creating proof can take about one minute)
-
 
 A proving result will be displayed in the browser console after verification
 
