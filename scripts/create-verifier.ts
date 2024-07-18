@@ -8,11 +8,11 @@ async function main() {
       credential,
       context
     },
-    olderThanYears,
-    youngerThanYears,
-    fromCountry,
-    passportNotExpired,
-    genderIs
+    olderThanYears, // check that user older than defined year
+    youngerThanYears, // check that user younger than defined year
+    fromCountry, // check that user from specific country
+    passportNotExpired, // check that passport not expired
+    genderIs // check user gender
   } = O1JS_ETH_DEV;
   const jalProgram = toJAL({
     target: "o1js:zk-program.cjs",
