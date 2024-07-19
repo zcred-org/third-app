@@ -46,7 +46,7 @@ async function createJAL(jalProgram: ReturnType<typeof toJAL>) {
     body: JSON.stringify(jalProgram)
   });
   if (createJalResp.ok) {
-    const { id: jalId } = await createJalResp.json();
+    const { id: jalId } = await createJalResp.json() as { id: string };
     fs.writeFileSync(
       new URL("../src/jal-id.ts", import.meta.url),
       `export const jalId = "${jalId}"`
