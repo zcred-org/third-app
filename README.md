@@ -43,7 +43,7 @@ pnpm run create-verifier
 pnpm run dev
 ```
 
-6. Go throw zCred verification (the process of creating proof can take about one minute)
+6. Go through zCred verification (the process of creating proof can take about one minute)
 
 A proving result will be displayed in the browser console after verification
 
