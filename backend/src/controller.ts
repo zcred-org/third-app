@@ -107,7 +107,7 @@ export function Controller({
       }))
     ).setProtectedHeader({ alg: "ES256K" })
       .sign(await jose.importJWK(jwk));
-    const webhookURL = new URL("/api/webhook", config.serverOrigin.href);
+    const webhookURL = new URL("./api/webhook", config.serverOrigin.href);
     const initSessionResp = await fetch(new URL(`/api/v2/verifier/${jalId}/session`, config.verifierOrigin), {
       method: "POST",
       headers: {
