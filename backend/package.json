@@ -1,0 +1,31 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "npx tsm ./src/main.ts"
+  },
+  "dependencies": {
+    "@fastify/cors": "^8.2.0",
+    "@jaljs/js-zcred": "^0.0.4",
+    "@noble/curves": "^1.6.0",
+    "@sinclair/typebox": "^0.33.9",
+    "@sybil-center/passport": "^0.0.2",
+    "dotenv": "^16.4.5",
+    "fastify": "4.23.2",
+    "jose": "^5.8.0",
+    "sort-keys": "^5.0.0",
+    "uint8arrays": "4.0.3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^18.11.10",
+    "tsm": "^2.3.0",
+    "typescript": "^4.9.5"
+  }
+}

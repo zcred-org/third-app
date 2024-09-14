@@ -1,0 +1,18 @@
+FROM node:18-alpine AS builder
+
+ARG VITE_SERVER_APP_ORIGIN
+
+WORKDIR /app
+
+COPY . .
+
+RUN rm -r ./backend
+RUN npm install -g pnpm
+RUN pnpm install
+RUN pnpm run build
+RUN rm -r ./frontend/src
+
+FROM nginx:alpine-slim
+
+COPY --from=builder /app/frontend/dist /usr/share/nginx/html
+COPY /frontend/deployment/default.conf.template /etc/nginx/templates/default.conf.template
