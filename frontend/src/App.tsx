@@ -62,12 +62,12 @@ export function App() {
   };
 
   const AfterVerification = () => {
-    if (isVerified) return (
+    if (isVerified && subjectId) return (
       <Result
         status="success"
         title="Successful verification"
         subTitle={
-          `User with address: ${subjectId} authenticated`
+          `User with address: ${subjectId.key} authenticated`
         }
       />
     );
