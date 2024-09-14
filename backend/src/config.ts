@@ -1,9 +1,9 @@
 type ConstructorConfigOptions = {
   port: string;
   host: string;
+  serverOrigin: URL;
   secret: string;
   redirectURL: URL;
-  webhookURL: URL;
   issuerURL: URL;
   credentialHolderURL: URL;
   verifierOrigin: string;
@@ -14,8 +14,8 @@ export class Config implements ConstructorConfigOptions {
   readonly port: string;
   readonly host: string;
   readonly secret: string;
+  readonly serverOrigin: URL
   readonly redirectURL: URL;
-  readonly webhookURL: URL;
   readonly verifierOrigin: string;
   readonly issuerURL: URL;
   readonly credentialHolderURL: URL;
@@ -25,7 +25,7 @@ export class Config implements ConstructorConfigOptions {
     this.host = options.host;
     this.secret = options.secret;
     this.redirectURL = options.redirectURL;
-    this.webhookURL = options.webhookURL;
+    this.serverOrigin = options.serverOrigin;
     this.issuerURL = options.issuerURL;
     this.credentialHolderURL = options.credentialHolderURL;
     this.verifierOrigin = options.verifierOrigin;

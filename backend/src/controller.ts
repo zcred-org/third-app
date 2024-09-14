@@ -85,7 +85,6 @@ export function Controller({
   jalId
 }: ControllerOptions) {
 
-  const webhookURLPath = new URL(config.webhookURL).pathname;
   const verifiedStore: Record<string, boolean> = {};
 
   function idToString(id: ZcredId) {
@@ -108,7 +107,7 @@ export function Controller({
       }))
     ).setProtectedHeader({ alg: "ES256K" })
       .sign(await jose.importJWK(jwk));
-
+    const webhookURL = new URL("/api/webhook", config.serverOrigin.href);
     const initSessionResp = await fetch(new URL(`/api/v2/verifier/${jalId}/session`, config.verifierOrigin), {
       method: "POST",
       headers: {
@@ -119,7 +118,7 @@ export function Controller({
         subject: {
           id: subjectId
         },
-        webhookURL: config.webhookURL,
+        webhookURL: webhookURL.href,
         redirectURL: config.redirectURL,
         issuer: {
           type: "http",
@@ -138,7 +137,7 @@ export function Controller({
     };
   });
 
-  fastify.post<{ Body: WebhookDto }>(webhookURLPath, {
+  fastify.post<{ Body: WebhookDto }>("/api/webhook", {
     schema: { body: WebhookDto }
   }, async (req, resp) => {
     if (!req.headers?.authorization) {

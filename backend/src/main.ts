@@ -19,7 +19,7 @@ async function main() {
       secret: process.env["SECRET"] || "",
       verifierOrigin: process.env["VERIFIER_ORIGIN"]!,
       redirectURL: new URL(process.env["REDIRECT_URL"]!),
-      webhookURL: new URL(process.env["WEBHOOK_URL"]!),
+      serverOrigin: new URL(process.env["SERVER_ORIGIN"]!),
       issuerURL: new URL(process.env["ISSUER_URL"]!),
       credentialHolderURL: new URL(process.env["CREDENTIAL_HOLDER_URL"]!),
     });
