@@ -77,10 +77,11 @@ async function createJalProgram(input: { config: Config, jwk: Es256kJwk }): Prom
       credential,
       context
     },
-    olderThanYears,
-    youngerThanYears,
-    fromCountry,
-    genderIs
+    olderThanYears, // check that user older than defined years
+    youngerThanYears, // check that user younger than defined years
+    fromCountry, // check that user from specific country
+    genderIs, // check user gender
+    passportNotExpired // check that passport not expired
   } = O1JS_ETH_DEV;
   const attributes = credential.attributes;
   const jalProgram = toJAL({
@@ -93,6 +94,7 @@ async function createJalProgram(input: { config: Config, jwk: Es256kJwk }): Prom
       context.now
     ],
     commands: [
+      assert(passportNotExpired()),
       assert(olderThanYears(18)),
       assert(youngerThanYears(45)),
       assert(not(fromCountry("USA"))),

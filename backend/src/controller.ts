@@ -151,6 +151,7 @@ export function Controller({
       return { message: "Access denied" };
     }
     const result = req.body.result;
+    console.log(JSON.stringify(result, null, 2));
     if (req.body.status === "success" && Value.Check(ProvingResult, result)) {
       const subjectId = idToString(result.publicInput.credential.attributes.subject.id);
       verifiedStore[subjectId] = true;
@@ -168,7 +169,6 @@ export function Controller({
       body: ZcredId
     }
   }, async (req) => {
-    console.log(req.body);
     const subjectId = idToString(req.body);
     return { isVerified: verifiedStore[subjectId] };
   });

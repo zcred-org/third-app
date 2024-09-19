@@ -27,25 +27,29 @@ credentials`](https://github.com/zcred-org/ZCIPs/blob/main/ZCIPs/zcip-2.md) and 
 pnpm i
 ```
 
-3. Open file `./scripts/create-verifier.ts` and specify assertion commands
+3. Set your `SECRET` in `./backend/.env`
 
-![image.png](/assets/assertion-commands.png)
+4. Open file `./backend/src/main.ts` and specify assertion commands in `ceateJalProgram` function
 
-4. Send verification program to verifier server
+![image.png](/assets/images/jal-program.png)
 
-```shell
-pnpm run create-verifier
-```
-
-5. Run and open frontend application
+5. Start backend application
 
 ```shell
-pnpm run dev
+cd ./backend && pnpm run dev 
 ```
 
-6. Go through zCred verification (the process of creating proof can take about one minute)
+6. Open new terminal and start frontend
 
-A proving result will be displayed in the browser console after verification
+```shell
+cd ./frontend && pnpm run dev
+```
+
+7. Open frontend application in browser, default `http://localhost:5180`
+
+8. Go through zCred verification (the process of creating proof can take about one minute)
+
+  A proving result will be displayed in backend terminal logs
 
 ## Advantages
 
@@ -58,8 +62,13 @@ A proving result will be displayed in the browser console after verification
 `sybilId` is special passport identifier. One physical passport is one `sybilId`.
 To get passport `sybilId` you need to specify `credential.attributes.document.sybilId` in `publicInput`
 
-![image.png](/assets/sybil-id.png)
+![image.png](/assets/images/sybil-id.png)
 
-After that you can get sybil id from `provingResult`
+You can get user sybil id from webhook request body
 
-![image.png](/assets/proving-result.png)
+![image.png](/assets/images/sybil-id-log.png)
+
+### Zcred verifier
+
+To learn how to create your frontend application to verify users using zero-knowledge credentials, you can read
+this: https://github.com/sybil-center/sybil-center/blob/dev/verifier/README.md
