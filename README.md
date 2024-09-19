@@ -49,7 +49,7 @@ cd ./frontend && pnpm run dev
 
 8. Go through zCred verification (the process of creating proof can take about one minute)
 
-  A proving result will be displayed in backend terminal logs
+A proving result will be displayed in backend terminal logs
 
 ## Advantages
 
@@ -72,3 +72,7 @@ You can get user sybil id from webhook request body
 
 To learn how to create your frontend application to verify users using zero-knowledge credentials, you can read
 this: https://github.com/sybil-center/sybil-center/blob/dev/verifier/README.md
+
+### Working application
+
+Instead of running this app on your computer, you can open the link: https://demo.zcred.sybil.center/
