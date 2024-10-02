@@ -5,13 +5,14 @@ import { serverApp } from "./backbone/server-app.ts";
 import { Background } from "./compontents/Background/Background.tsx";
 import css from "./App.module.css";
 import { Alert, Button, Card, Divider, Flex, notification, Result, Typography } from "antd";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
+
 
 export function App() {
   const [toast, toastHolder] = notification.useNotification({ placement: "bottomRight" });
   const [error, setError] = useState<null | Error>(null);
 
-  const [_, setEthWallet] = useState<null | ethers.BrowserProvider>(null);
+  const [, setEthWallet] = useState<null | ethers.BrowserProvider>(null);
   const [eip1193Adapter, setEip1193Adapter] = useState<null | EIP1193Adapter>(null);
 
   useEffect(() => {
@@ -25,7 +26,7 @@ export function App() {
   const {
     mutate: onEthConnect,
     data: { verifyURL, subjectId, isVerified } = {},
-    isLoading: isEthConnectLoading,
+    isPending: isEthConnectLoading,
   } = useMutation({
     mutationFn: async () => {
       if (!eip1193Adapter) throw new Error("No EIP1193Adapter");
