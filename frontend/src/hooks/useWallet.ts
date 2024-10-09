@@ -1,14 +1,16 @@
-import { useConnectorClient } from 'wagmi';
+import { useConnectorClient, useDisconnect } from 'wagmi';
 import { EIP1193Adapter } from '@zcredjs/ethereum';
 import type { IWalletAdapter, Identifier } from '@zcredjs/core';
 import { useQuery } from '@tanstack/react-query';
 import { useWeb3ModalState, useWeb3Modal } from '@web3modal/wagmi/react';
 import type { OverrideProperties } from '../types/override-properties.ts';
+import { useCallback } from 'react';
 
 
 type UseWalletResultIdle = {
   connect: VoidFunction,
-  isConnecting: false,
+  disconnect: VoidFunction,
+  isLoading: false,
   isConnected: false,
   error: null,
   adapter: null,
@@ -18,7 +20,7 @@ type UseWalletResultIdle = {
 }
 
 type UseWalletResult = UseWalletResultIdle
-  | OverrideProperties<UseWalletResultIdle, { isConnecting: true }>
+  | OverrideProperties<UseWalletResultIdle, { isLoading: true }>
   | OverrideProperties<UseWalletResultIdle, { error: Error }>
   | OverrideProperties<UseWalletResultIdle, {
   isConnected: true,
@@ -30,6 +32,7 @@ type UseWalletResult = UseWalletResultIdle
 
 export function useWallet() {
   const web3Modal = useWeb3Modal();
+  const disconnect = useDisconnect();
   const web3ModalState = useWeb3ModalState();
   const connector = useConnectorClient({ query: { throwOnError: false, retry: true } });
 
@@ -47,13 +50,14 @@ export function useWallet() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const isConnecting = web3ModalState.open || connector.isFetching || walletQuery.isFetching;
-  const isConnected = !isConnecting && !!walletQuery.data?.subjectId;
+  const isLoading = web3ModalState.open || connector.isFetching || walletQuery.isFetching || disconnect.isPending;
+  const isConnected = !isLoading && !!walletQuery.data?.subjectId;
 
   return {
-    connect: () => web3Modal.open(),
-    error: connector.error || walletQuery.error || null,
-    isConnecting,
+    connect: useCallback(() => web3Modal.open(), [web3Modal]),
+    disconnect: useCallback(() => disconnect.disconnect(), [disconnect]),
+    error: connector.error || walletQuery.error || disconnect.error || null,
+    isLoading,
     isConnected,
     adapter: isConnected && walletQuery.data?.adapter || null,
     address: isConnected && walletQuery.data?.address || null,
