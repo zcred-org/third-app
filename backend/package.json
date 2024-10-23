@@ -12,7 +12,7 @@
     "@jaljs/js-zcred": "^0.0.4",
     "@noble/curves": "^1.6.0",
     "@sinclair/typebox": "^0.33.9",
-    "@sybil-center/passport": "^0.0.2",
+    "@sybil-center/passport": "^1.0.0",
     "dotenv": "^16.4.5",
     "fastify": "4.23.2",
     "jose": "^5.8.0",
