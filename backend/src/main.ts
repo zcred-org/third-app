@@ -6,7 +6,7 @@ import { Controller, Es256kJwk } from "./controller.js";
 import { secp256k1 } from "@noble/curves/secp256k1";
 import dotenv from "dotenv";
 import * as jose from "jose";
-import { O1JS_ETH_DEV } from "@sybil-center/passport";
+import { getPassportSandbox } from "@sybil-center/passport";
 import { assert, not, toJAL } from "@jaljs/js-zcred";
 
 async function main() {
@@ -82,7 +82,11 @@ async function createJalProgram(input: { config: Config, jwk: Es256kJwk }): Prom
     fromCountry, // check that user from specific country
     genderIs, // check user gender
     passportNotExpired // check that passport not expired
-  } = O1JS_ETH_DEV;
+  } = getPassportSandbox({
+    subjectKeyType: "ethereum:address",
+    zkProofSystem: "o1js",
+    isDev: true
+  });
   const attributes = credential.attributes;
   const jalProgram = toJAL({
     target: "o1js:zk-program.cjs",
