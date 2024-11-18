@@ -1,10 +1,11 @@
-import { useConnectorClient, useDisconnect } from 'wagmi';
-import { EIP1193Adapter } from '@zcredjs/ethereum';
-import type { IWalletAdapter, Identifier } from '@zcredjs/core';
 import { useQuery } from '@tanstack/react-query';
 import { useWeb3ModalState, useWeb3Modal } from '@web3modal/wagmi/react';
-import type { OverrideProperties } from '../types/override-properties.ts';
+import type { IWalletAdapter, Identifier } from '@zcredjs/core';
+import { EIP1193Adapter } from '@zcredjs/ethereum';
 import { useCallback } from 'react';
+import { useConnectorClient, useDisconnect, useAccount } from 'wagmi';
+import type { OverrideProperties } from '@/types/override-properties.ts';
+import { Ms } from '@/utils/ms.ts';
 
 
 type UseWalletResultIdle = {
@@ -31,6 +32,7 @@ type UseWalletResult = UseWalletResultIdle
 }>;
 
 export function useWallet() {
+  const account = useAccount();
   const web3Modal = useWeb3Modal();
   const disconnect = useDisconnect();
   const web3ModalState = useWeb3ModalState();
@@ -38,6 +40,7 @@ export function useWallet() {
 
   const walletQuery = useQuery({
     queryKey: ['walletAdapter', `${connector.data?.chain.id}/${connector.data?.account.address}`],
+    staleTime: Ms.minute(3),
     enabled: !!connector.data?.account.address,
     queryFn: async () => {
       if (!connector.data) throw new Error('Connector is not ready');
@@ -47,10 +50,10 @@ export function useWallet() {
       ]);
       return { adapter, address, subjectId, chainId };
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const isLoading = web3ModalState.open || connector.isFetching || walletQuery.isFetching || disconnect.isPending;
+  const isLoading = web3ModalState.open || connector.isFetching || walletQuery.isFetching || disconnect.isPending
+    || account.isConnecting || account.isReconnecting;
   const isConnected = !isLoading && !!walletQuery.data?.subjectId;
 
   return {

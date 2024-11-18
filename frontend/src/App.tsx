@@ -1,64 +1,30 @@
-import type { CSSProperties } from 'react';
-import { Alert, Button, Card, Divider, Flex, Result, Typography } from 'antd';
-import { Background } from './compontents/Background/Background.tsx';
-import { useWallet } from './hooks/useWallet.ts';
-import { useVerification } from './hooks/useVerification.ts';
-import { Loading } from './compontents/Loading.tsx';
-import { AccountButton } from './compontents/AccountButton.tsx';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { WagmiProvider } from 'wagmi';
+import { queryClient } from '@/backbone/query-client.ts';
+import { wagmiConfig } from '@/backbone/wagmi-config.ts';
+import { Background } from '@/compontents/Background/Background.tsx';
+import { DemoCompletedModal } from '@/compontents/DemoCompletedModal.tsx';
+import { Devtools } from '@/compontents/Devtools.tsx';
+import { GlobalPreloader } from '@/compontents/GlobalPreloader.tsx';
+import { HomePage } from '@/HomePage.tsx';
+import '@/styles/var-dvh.ts';
 
 
-const appBackgroundStyle: CSSProperties = {
-  display: 'flex', flexDirection: 'column',
-  justifyContent: 'center', alignItems: 'center',
-  minHeight: '100vh',
-};
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
 
-export function App() {
-  const wallet = useWallet();
-  const verification = useVerification();
-  const error = wallet.error || verification.error;
-  const isVerified = !!verification.data?.isVerified;
+        <HomePage />
+        <DemoCompletedModal />
+        <Background />
 
-  return (
-    <Background style={appBackgroundStyle}>
-      <Typography.Title style={{ color: 'white' }}>Third-App</Typography.Title>
-      <Card style={{ maxWidth: '500px' }}>
-        <Flex
-          justify="center"
-          align="stretch"
-          gap="middle"
-          style={{ flexDirection: isVerified ? 'column-reverse' : 'column' }}
-        >
-          <AccountButton />
-          <MainFlow />
-        </Flex>
-        {error?.message ? (<>
-          <Divider />
-          <Alert
-            message="Error"
-            description={error.message}
-            type="error"
-            showIcon
-          />
-        </>) : null}
-      </Card>
-    </Background>
-  );
-}
+        <GlobalPreloader />
+        <Devtools />
 
-
-function MainFlow() {
-  const verification = useVerification();
-
-  return verification.isFetching ? (
-    <Loading>Loading verification result...</Loading>
-  ) : verification.data?.verifyURL ? (
-    <Button type="primary" href={verification.data.verifyURL.href}>Auth with zCred</Button>
-  ) : verification.data?.isVerified ? (
-    <Result
-      status="success"
-      title="Successful verification"
-      subTitle={`User with address: ${verification.data.subjectId.key} authenticated`}
-    />
-  ) : null;
-}
+      </QueryClientProvider>
+    </WagmiProvider>
+  </StrictMode>,
+);

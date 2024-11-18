@@ -1,1 +1,0 @@
-export const jalId = "7bb780ba009e510b1526edb95902258bf97d5aac989bb6721f2b10b78b454380"

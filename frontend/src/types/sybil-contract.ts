@@ -5,6 +5,6 @@ export type SybilContract = {
   setSybilId(
     sybilId: Uint8Array,
     signature: Uint8Array,
-    data: { value: BigInt },
+    data: { value: bigint },
   ): Promise<ethers.ContractTransactionResponse>
 }

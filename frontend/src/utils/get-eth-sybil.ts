@@ -1,4 +1,5 @@
-import type { EthSybil } from '../types/eth-sybil.ts';
+import type { EthSybil } from '@/types/eth-sybil.ts';
+
 
 export async function getEthSybil(address: string): Promise<EthSybil> {
   const ep = new URL(`https://dev.verifier.sybil.center/api/eth-sybil/${address.toLowerCase()}`);

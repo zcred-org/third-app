@@ -6,10 +6,9 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true
   },
-  "exclude": [
-    "./scripts"
-  ],
   "include": [
-    "vite.config.ts"
+    "scripts",
+    "vite.config.ts",
+    "tailwind.config.ts"
   ]
 }

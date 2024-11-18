@@ -9,7 +9,7 @@ COPY . .
 
 RUN rm -r ./backend
 RUN npm install -g pnpm
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 RUN pnpm run build
 RUN rm -r ./frontend/src
 

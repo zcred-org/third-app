@@ -1,6 +1,7 @@
-import { O1JS_ETH_DEV } from "@sybil-center/passport";
-import { assert, not, toJAL } from "@jaljs/js-zcred";
 import fs from "node:fs";
+import { assert, not, toJAL } from "@jaljs/js-zcred";
+import { O1JS_ETH_DEV } from "@sybil-center/passport";
+
 
 async function main() {
   const {

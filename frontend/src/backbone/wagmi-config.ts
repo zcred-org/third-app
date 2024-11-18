@@ -5,10 +5,10 @@ import { config } from './config.ts';
 
 
 const metadata = {
-  name: 'ThirdApp',
-  description: 'ThirdApp website',
+  name: 'WineStore Demo',
+  description: 'WineStore Demo',
   url: location.origin,
-  icons: ['https://avatars.githubusercontent.com/u/37784886'],
+  icons: [new URL('favicon.svg', location.origin).href],
 };
 
 const allChains = Object.values(chains).filter((chain: unknown): chain is chains.Chain => {
