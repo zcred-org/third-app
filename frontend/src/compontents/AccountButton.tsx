@@ -42,7 +42,7 @@ export function AccountButton() {
         className={`
           [--anchor-padding:1rem] [--anchor-gap:4px]
           flex flex-col items-center gap-1 px-2 py-2
-          border border-black/20 bg-black/20 backdrop-blur-xl rounded-md
+          border border-white/30 bg-black/10 backdrop-blur-xl rounded-md
           origin-top transition ease-out data-[closed]:scale-90 data-[closed]:opacity-0
         `}
       >

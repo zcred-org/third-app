@@ -40,7 +40,7 @@ export function DemoCompletedModal() {
           </p>
           <div className="flex justify-end gap-3 mt-4">
             <Button onClick={close} isGlass>Got it, cool!</Button>
-            <Button as='a' href={config.landingHref}>About zCred</Button>
+            <Button as="a" href={config.landingHref}>About zCred</Button>
           </div>
         </DialogPanel>
       </div>

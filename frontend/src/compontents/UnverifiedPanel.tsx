@@ -1,23 +1,24 @@
-import type { ComponentProps } from 'react';
-import { ZCredButton } from '@/compontents/ZCredButton.tsx';
+import { Transition } from '@headlessui/react';
+import { IconUnverified } from '@/compontents/ui/Icons/IconUnverified.tsx';
 import { useVerification } from '@/hooks/useVerification.ts';
-import { useWallet } from '@/hooks/useWallet.ts';
-import { cn } from '@/utils/cn.ts';
 
 
-export function UnverifiedPanel({ className, ...props }: ComponentProps<'div'>) {
-  const wallet = useWallet();
+export function UnverifiedPanel() {
   const verification = useVerification();
-  const isUnconnected = !(wallet.isConnected || wallet.isLoading);
 
-  return isUnconnected || verification.data?.isVerified === false ? (
-    <div className={cn('flex flex-wrap items-center justify-center gap-1 xl:gap-3 py-3 px-5 bg-[#FFDBDB]', className)} {...props}>
-        <span className="text-[#DD0000] text-center text-sm xl:text-base">
-          To continue shopping you need prove
-          <br className="xl:hidden" />
-          that you are adult and not from USA
-        </span>
-      <ZCredButton className="text-sm xl:text-base" />
-    </div>
-  ) : null;
+  return (
+    <Transition show={!verification.data?.isVerified}>
+      <div className={`
+            group sticky top-0 overflow-hidden z-[1]
+            py-1 px-5 max-xl:w-full backdrop-blur-lg
+            text-orange-100 bg-orange-400/30 border-b border-orange-300/30
+            transition-all duration-300 data-[closed]:py-0 data-[closed]:opacity-0`}
+      >
+        <div className="flex items-center justify-center gap-3 text-base transition-all duration-300 group-data-[closed]:[line-height:0px]">
+          <IconUnverified className="shrink-0 size-5 -mb-1 transition-all duration-300 group-data-[closed]:h-0" />
+          To continue shopping you need prove that you are adult and not from USA
+        </div>
+      </div>
+    </Transition>
+  );
 }

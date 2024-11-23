@@ -28,8 +28,8 @@ export const Button = forwardRef((props: ButtonProps, ref: ForwardedRef<HTMLButt
   } = props;
 
   const isSm = size === 'sm';
-  const isMd = size === 'md' || !size;
   const isLg = size === 'lg';
+  const isMd = !isSm && !isLg;
 
   const isClickable = !isDisabled && !isLoading;
   const isBlur = isGlass && _isBlur !== false;
@@ -49,10 +49,10 @@ export const Button = forwardRef((props: ButtonProps, ref: ForwardedRef<HTMLButt
         'before:absolute before:invisible before:inset-0 before:bg-[url(/images/disabled_shading.png)] before:bg-repeat before:[background-size:7px_7px] before:opacity-15 before:invert',
         'after:absolute after:bg-transparent after:inset-0 after:transition-all after:duration-100 after:ease-in-out',
         isGlass
-          ? 'bg-white/20 text-white border border-white/30'.concat(isBlur ? ' backdrop-blur-lg' : '')
+          ? 'bg-white/20 text-white border border-white/15'.concat(isBlur ? ' backdrop-blur-lg' : '')
           : 'bg-white text-black',
         {
-          'hover:after:bg-white/30 active:after:bg-black/10': isClickable,
+          'hover:after:bg-white/10 active:after:bg-black/5': isClickable,
           'px-[8px] py-[3px] rounded-md after:rounded-md before:rounded-md': isSm,
           'px-[12px] py-[4px] rounded-md after:rounded-md before:rounded-md': isMd,
           'px-16 py-3 text-lg rounded-xl after:rounded-xl before:rounded-xl': isLg,
