@@ -2,6 +2,7 @@ import path from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { checker } from 'vite-plugin-checker';
+import { compression } from 'vite-plugin-compression2';
 import packageJson from './package.json';
 
 
@@ -22,6 +23,8 @@ export default defineConfig(() => {
           useFlatConfig: false,
         },
       }),
+      compression({ algorithm: 'gzip' }),
+      compression({ algorithm: 'brotliCompress' }),
     ],
     define: {
       'import.meta.env.VITE_BUILD_ID': JSON.stringify(VITE_BUILD_ID),

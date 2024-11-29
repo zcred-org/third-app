@@ -53,7 +53,5 @@ function useIsNetworkIdle(threshold = 500) {
     };
   }, [isNetworkIdle, threshold]);
 
-  console.log({ isNetworkIdle });
-
   return isNetworkIdle;
 }
