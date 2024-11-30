@@ -16,6 +16,8 @@ export type ButtonProps<Element extends ElementType = 'button'> = BaseButtonProp
   & Omit<ComponentPropsWithoutRef<Element>, keyof BaseButtonProps>
   & { as?: Element }
 
+type ButtonType = <Component extends ElementType = 'button'>(props: ButtonProps<Component> & { ref?: unknown }) => ReactNode;
+
 export const Button = forwardRef((props: ButtonProps, ref: ForwardedRef<HTMLButtonElement>) => {
   const {
     size,
@@ -69,4 +71,4 @@ export const Button = forwardRef((props: ButtonProps, ref: ForwardedRef<HTMLButt
       {children}
     </Component>
   );
-}) as <Component extends ElementType = 'button'>(props: ButtonProps<Component> & { ref?: unknown }) => ReactNode;
+}) as ButtonType;

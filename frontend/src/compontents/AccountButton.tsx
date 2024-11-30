@@ -51,7 +51,7 @@ export function AccountButton() {
             {verification.isFetching ? (<>
               <Spinner className="size-10" isApproximate />
               Verifying...
-            </>) : verification.data?.isVerified ? (<>
+            </>) : verification.isVerified ? (<>
               <IconVerified className="size-10 text-green-500 stroke-white stroke-[1.5] [paint-order:stroke]" />
               Verified
             </>) : (<>

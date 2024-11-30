@@ -7,7 +7,7 @@ export function UnverifiedPanel() {
   const verification = useVerification();
 
   return (
-    <Transition show={!verification.data?.isVerified}>
+    <Transition show={!verification.isVerified}>
       <div className={`
             group sticky top-0 overflow-hidden
             py-1 px-5 max-xl:w-full backdrop-blur-lg

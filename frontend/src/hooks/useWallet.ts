@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useWeb3ModalState, useWeb3Modal } from '@web3modal/wagmi/react';
 import type { IWalletAdapter, Identifier } from '@zcredjs/core';
 import { EIP1193Adapter } from '@zcredjs/ethereum';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useConnectorClient, useDisconnect, useAccount } from 'wagmi';
 import type { OverrideProperties } from '@/types/override-properties.ts';
 import { Ms } from '@/utils/ms.ts';
@@ -37,18 +37,20 @@ export function useWallet() {
   const disconnect = useDisconnect();
   const web3ModalState = useWeb3ModalState();
   const connector = useConnectorClient({ query: { throwOnError: false, retry: true } });
+  const adapter = useMemo(() => {
+    return connector.data && new EIP1193Adapter(connector.data) as IWalletAdapter;
+  }, [connector.data]);
 
   const walletQuery = useQuery({
     queryKey: ['walletAdapter', `${connector.data?.chain.id}/${connector.data?.account.address}`],
-    staleTime: Ms.minute(3),
-    enabled: !!connector.data?.account.address,
+    staleTime: Ms.day(),
+    enabled: !!adapter,
     queryFn: async () => {
-      if (!connector.data) throw new Error('Connector is not ready');
-      const adapter = new EIP1193Adapter(connector.data) as IWalletAdapter;
+      if (!adapter) throw new Error('Wallet connection is not ready');
       const [address, chainId, subjectId] = await Promise.all([
         adapter.getAddress(), adapter.getChainId(), adapter.getSubjectId(),
       ]);
-      return { adapter, address, subjectId, chainId };
+      return { address, subjectId, chainId };
     },
   });
 
@@ -62,7 +64,7 @@ export function useWallet() {
     error: connector.error || walletQuery.error || disconnect.error || null,
     isLoading,
     isConnected,
-    adapter: isConnected && walletQuery.data?.adapter || null,
+    adapter: isConnected && adapter || null,
     address: isConnected && walletQuery.data?.address || null,
     chainId: isConnected && walletQuery.data?.chainId || null,
     subjectId: isConnected && walletQuery.data?.subjectId || null,

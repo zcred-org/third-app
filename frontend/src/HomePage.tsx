@@ -20,7 +20,6 @@ export function HomePage() {
 function MainSection() {
   const wallet = useWallet();
   const verification = useVerification();
-  const isVerified = verification.data?.isVerified;
 
   const wineClassName = 'z-[-1] h-full transition duration-1000 xl:h-[100%] xl:absolute xl:left-1/4 xl:-translate-x-1/2 xl:bottom-[-15%]';
 
@@ -31,14 +30,14 @@ function MainSection() {
     </>),
     onClick: wallet.connect,
     isLoading: wallet.isLoading,
-  } : isVerified === false ? {
+  } : verification.isVerified === false ? {
     children: 'Verify with zCred',
     as: 'a',
-    href: verification.data?.verifyURL?.href,
+    href: verification.verifyURL?.href,
   } : {
     children: 'Add to Cart',
     onClick: DemoCompletedModal.open,
-    isLoading: verification.isLoading,
+    isLoading: verification.isFetching,
   };
 
   return (
@@ -46,11 +45,11 @@ function MainSection() {
       <div className="grow h-0 max-xl:w-full flex justify-center min-h-[400px] relative xl:absolute xl:h-[unset] xl:inset-0 pointer-events-none">
         <img
           src="/images/bottle_from_with_korob_shadow.png" alt=""
-          className={cn(wineClassName, isVerified ? 'opacity-100' : 'opacity-0')}
+          className={cn(wineClassName, verification.isVerified ? 'opacity-100' : 'opacity-0')}
         />
         <img
           src="/images/korob_shadow.png" alt=""
-          className={cn(wineClassName, 'ml-3 xl:ml-2 absolute top-0 xl:top-[unset]', isVerified ? 'opacity-0 -translate-y-20' : 'opacity-100')}
+          className={cn(wineClassName, 'ml-3 xl:ml-2 absolute top-0 xl:top-[unset]', verification.isVerified ? 'opacity-0 -translate-y-20' : 'opacity-100')}
         />
       </div>
       <h1 className="font-serif text-center text-2xl xl:text-5xl text-white font-bold">
@@ -70,7 +69,7 @@ function MainSection() {
 
 
 function WineProperty(props: { label: string, value: string }) {
-  const isVerified = useVerification().data?.isVerified;
+  const { isVerified } = useVerification();
 
   return (
     <div className="flex flex-col">
